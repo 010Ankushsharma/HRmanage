@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  # MongoDB Database
+  mongo:
+    image: mongo:6.0
+    container_name: hr-mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: admin123
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - hr-network
+
+  # HR Management Application
+  app:
+    build: .
+    container_name: hr-app
+    restart: always
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - MONGODB_URI=mongodb://admin:admin123@mongo:27017/hr_dashboard?authSource=admin
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mongo
+    networks:
+      - hr-network
+    command: sh -c "sleep 10 && npm start"
+
+volumes:
+  mongo-data:
+    driver: local
+
+networks:
+  hr-network:
+    driver: bridge

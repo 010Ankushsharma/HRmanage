@@ -1,0 +1,223 @@
+<%- include('partials/navigation') %>
+
+<div class="dashboard-container">
+  <div class="container-fluid py-4">
+    <!-- Reports Summary Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3 mb-3">
+        <div class="card bg-primary text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title">Total Employees</h6>
+                <h2><%= totalEmployees %></h2>
+              </div>
+              <i class="fas fa-users fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <div class="card bg-success text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title">Active Employees</h6>
+                <h2><%= activeEmployees %></h2>
+              </div>
+              <i class="fas fa-user-check fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <div class="card bg-warning text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title">On Leave</h6>
+                <h2><%= onLeave %></h2>
+              </div>
+              <i class="fas fa-user-clock fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <div class="card bg-danger text-white">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+              <div>
+                <h6 class="card-title">Inactive</h6>
+                <h2><%= inactiveEmployees || 0 %></h2>
+              </div>
+              <i class="fas fa-user-times fa-3x opacity-50"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Statistics -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Leave Statistics</h5>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <div class="col-md-3">
+                <div class="stat-item">
+                  <h3 class="text-primary"><%= totalLeaves %></h3>
+                  <p class="text-muted">Total Leaves</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-item">
+                  <h3 class="text-warning"><%= pendingLeaves %></h3>
+                  <p class="text-muted">Pending Leaves</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-item">
+                  <h3 class="text-success"><%= approvedLeaves %></h3>
+                  <p class="text-muted">Approved Leaves</p>
+                </div>
+              </div>
+              <div class="col-md-3">
+                <div class="stat-item">
+                  <h3 class="text-danger"><%= rejectedLeaves || 0 %></h3>
+                  <p class="text-muted">Rejected Leaves</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Department Distribution -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Department Distribution</h5>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <% if(typeof deptStats !== 'undefined' && deptStats.length > 0) { %>
+                <% deptStats.forEach(dept => { %>
+                  <div class="col-md-2">
+                    <div class="stat-item">
+                      <h4 class="text-primary"><%= dept.count %></h4>
+                      <p class="text-muted"><%= dept.name %></p>
+                    </div>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <p class="text-muted text-center">No department data available</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Today's Attendance Summary -->
+    <div class="row mb-4">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Today's Attendance Summary</h5>
+          </div>
+          <div class="card-body">
+            <div class="row text-center">
+              <% if(typeof attendanceStats !== 'undefined') { %>
+                <div class="col-md-4">
+                  <div class="stat-item">
+                    <h4 class="text-success"><%= attendanceStats.present || 0 %></h4>
+                    <p class="text-muted">Present</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="stat-item">
+                    <h4 class="text-danger"><%= attendanceStats.absent || 0 %></h4>
+                    <p class="text-muted">Absent</p>
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <div class="stat-item">
+                    <h4 class="text-warning"><%= attendanceStats.late || 0 %></h4>
+                    <p class="text-muted">Late</p>
+                  </div>
+                </div>
+              <% } else { %>
+                <p class="text-muted text-center">No attendance data available</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Salary Summary -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="card bg-info text-white">
+          <div class="card-body">
+            <div class="text-center">
+              <h5 class="card-title">Total Monthly Salary Expenditure</h5>
+              <h2>₹<%= typeof totalMonthlySalary !== 'undefined' ? parseFloat(totalMonthlySalary).toLocaleString() : '0' %></h2>
+              <p class="mb-0">Per Month</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card bg-dark text-white">
+          <div class="card-body">
+            <div class="text-center">
+              <h5 class="card-title">Total Annual Salary Commitment</h5>
+              <h2>₹<%= typeof totalAnnualSalary !== 'undefined' ? parseFloat(totalAnnualSalary).toLocaleString() : '0' %></h2>
+              <p class="mb-0">Per Year</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Export Options -->
+    <div class="row">
+      <div class="col-md-12">
+        <div class="card">
+          <div class="card-header">
+            <h5 class="mb-0">Export Reports</h5>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-primary w-100" onclick="alert('PDF export will be implemented soon!')">
+                  <i class="fas fa-file-pdf me-2"></i>Employee Report (PDF)
+                </button>
+              </div>
+              <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-success w-100" onclick="alert('Excel export will be implemented soon!')">
+                  <i class="fas fa-file-excel me-2"></i>Attendance Report (Excel)
+                </button>
+              </div>
+              <div class="col-md-4 mb-3">
+                <button class="btn btn-outline-info w-100" onclick="alert('Payroll PDF export will be implemented soon!')">
+                  <i class="fas fa-file-invoice-dollar me-2"></i>Payroll Report (PDF)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

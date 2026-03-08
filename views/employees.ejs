@@ -1,0 +1,197 @@
+<%- include('partials/navigation') %>
+
+<div class="dashboard-container">
+  <div class="container-fluid py-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">All Employees</h5>
+        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#addEmployeeModal">
+          <i class="fas fa-plus me-2"></i>Add Employee
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Joining Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(employees.length > 0) { %>
+                <% employees.forEach(emp => { %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=<%= emp.name %>&background=random" 
+                             alt="<%= emp.name %>" class="rounded-circle me-2" width="40" height="40">
+                        <div>
+                          <h6 class="mb-0"><%= emp.name %></h6>
+                          <small class="text-muted"><%= emp.email %></small>
+                        </div>
+                      </div>
+                    </td>
+                    <td><%= emp.department %></td>
+                    <td><%= emp.position %></td>
+                    <td><%= new Date(emp.joiningDate).toLocaleDateString() %></td>
+                    <td>
+                      <span class="badge <%= emp.status === 'Active' ? 'bg-success' : emp.status === 'On Leave' ? 'bg-warning' : 'bg-secondary' %>">
+                        <%= emp.status %>
+                      </span>
+                    </td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary edit-btn" 
+                              data-id="<%= emp._id %>"
+                              data-name="<%= emp.name %>"
+                              data-email="<%= emp.email %>"
+                              data-department="<%= emp.department %>"
+                              data-position="<%= emp.position %>"
+                              data-salary="<%= emp.salary %>"
+                              data-joiningdate="<%= new Date(emp.joiningDate).toISOString().split('T')[0] %>"
+                              data-status="<%= emp.status %>"
+                              data-bs-toggle="modal" 
+                              data-bs-target="#editEmployeeModal">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger ms-1 delete-btn" 
+                              data-id="<%= emp._id %>"
+                              data-name="<%= emp.name %>">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="6" class="text-center text-muted">No employees found</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add Employee Modal -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form action="/employees/add" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Add New Employee</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select" name="department" required>
+              <option value="HR">HR</option>
+              <option value="IT">IT</option>
+              <option value="Sales">Sales</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Finance">Finance</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Position</label>
+            <input type="text" class="form-control" name="position" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Annual Salary</label>
+            <input type="number" class="form-control" name="salary" required min="0" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Joining Date</label>
+            <input type="date" class="form-control" name="joiningDate" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" name="status" required>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="On Leave">On Leave</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Add Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Employee Modal -->
+<div class="modal fade" id="editEmployeeModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="editEmployeeForm" method="POST">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Employee</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="editEmployeeId">
+          <div class="mb-3">
+            <label class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="editName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-control" id="editEmail" name="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department</label>
+            <select class="form-select" id="editDepartment" name="department" required>
+              <option value="HR">HR</option>
+              <option value="IT">IT</option>
+              <option value="Sales">Sales</option>
+              <option value="Marketing">Marketing</option>
+              <option value="Finance">Finance</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Position</label>
+            <input type="text" class="form-control" id="editPosition" name="position" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Annual Salary</label>
+            <input type="number" class="form-control" id="editSalary" name="salary" required min="0" step="0.01">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Joining Date</label>
+            <input type="date" class="form-control" id="editJoiningDate" name="joiningDate" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Status</label>
+            <select class="form-select" id="editStatus" name="status" required>
+              <option value="Active">Active</option>
+              <option value="Inactive">Inactive</option>
+              <option value="On Leave">On Leave</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Update Employee</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<%- include('partials/navigation') %>
+
+<div class="dashboard-container">
+  <div class="container-fluid py-4">
+    <div class="card">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Payroll Management</h5>
+        <button class="btn btn-primary btn-sm" onclick="alert('Payroll calculation feature will be implemented soon!')">
+          <i class="fas fa-play me-2"></i>Run Payroll
+        </button>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Employee</th>
+                <th>Department</th>
+                <th>Position</th>
+                <th>Annual Salary</th>
+                <th>Monthly Salary</th>
+                <th>Tax (10%)</th>
+                <th>Deductions (5%)</th>
+                <th>Net Salary</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% if(employees.length > 0) { %>
+                <% employees.forEach(emp => { 
+                  const monthlySalary = emp.monthlySalary || (emp.salary / 12);
+                  const tax = monthlySalary * 0.1;
+                  const deduction = monthlySalary * 0.05;
+                  const netSalary = monthlySalary - tax - deduction;
+                %>
+                  <tr>
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <img src="https://ui-avatars.com/api/?name=<%= emp.name %>&background=random" 
+                             alt="<%= emp.name %>" class="rounded-circle me-2" width="40" height="40">
+                        <div>
+                          <h6 class="mb-0"><%= emp.name %></h6>
+                          <small class="text-muted"><%= emp.email %></small>
+                        </div>
+                      </div>
+                    </td>
+                    <td><%= emp.department %></td>
+                    <td><%= emp.position %></td>
+                    <td>₹<%= emp.salary.toLocaleString() %></td>
+                    <td>₹<%= Math.round(monthlySalary).toLocaleString() %></td>
+                    <td>₹<%= Math.round(tax).toLocaleString() %></td>
+                    <td>₹<%= Math.round(deduction).toLocaleString() %></td>
+                    <td><strong>₹<%= Math.round(netSalary).toLocaleString() %></strong></td>
+                    <td>
+                      <button class="btn btn-sm btn-outline-primary generate-payslip" 
+                              data-id="<%= emp._id %>"
+                              data-name="<%= emp.name %>"
+                              data-salary="<%= Math.round(netSalary) %>"
+                              title="Generate Payslip">
+                        <i class="fas fa-file-alt"></i> Payslip
+                      </button>
+                    </td>
+                  </tr>
+                <% }) %>
+              <% } else { %>
+                <tr>
+                  <td colspan="9" class="text-center text-muted">No employees found</td>
+                </tr>
+              <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

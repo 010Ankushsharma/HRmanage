@@ -1,0 +1,30 @@
+{
+  "name": "hr-dashboard",
+  "version": "1.0.0",
+  "description": "HR Management Dashboard with Node.js, Express, MongoDB, and EJS",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "seed": "node seeders/seedData.js"
+  },
+  "keywords": [
+    "hr",
+    "dashboard",
+    "express",
+    "mongodb",
+    "ejs"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.0.3",
+    "dotenv": "^16.3.1",
+    "ejs": "^3.1.9",
+    "express-ejs-layouts": "^2.5.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

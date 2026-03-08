@@ -1,0 +1,253 @@
+<%- include('partials/navigation') %>
+
+<div class="dashboard-container">
+  <div class="container-fluid py-4">
+    <!-- Top Cards -->
+    <div class="row mb-4">
+      <div class="col-md-3 mb-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-primary">
+            <i class="fas fa-users"></i>
+          </div>
+          <div class="stat-content">
+            <h3><%= totalEmployees %></h3>
+            <p>Total Employees</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-danger">
+            <i class="fas fa-clock"></i>
+          </div>
+          <div class="stat-content">
+            <h3><%= onLeaveToday %></h3>
+            <p>On Leave Today</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-success">
+            <i class="fas fa-file-alt"></i>
+          </div>
+          <div class="stat-content">
+            <h3><%= pendingApprovals %></h3>
+            <p>Pending Approvals</p>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col-md-3 mb-3">
+        <div class="stat-card">
+          <div class="stat-icon bg-warning">
+            <i class="fas fa-calendar-alt"></i>
+          </div>
+          <div class="stat-content">
+            <h3><%= upcomingHolidays %></h3>
+            <p>Upcoming Holidays</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row mb-4">
+      <!-- Employee Overview Chart -->
+      <div class="col-lg-8 mb-4">
+        <div class="card chart-card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Employee Overview</h5>
+            <div class="btn-group" role="group">
+              <button type="button" class="btn btn-sm btn-primary active" id="monthlyBtn">Monthly</button>
+              <button type="button" class="btn btn-sm btn-outline-primary" id="yearlyBtn">Yearly</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <canvas id="employeeOverviewChart"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Attendance Summary Chart -->
+      <div class="col-lg-4 mb-4">
+        <div class="card chart-card">
+          <div class="card-header">
+            <h5 class="mb-0">Attendance Summary</h5>
+          </div>
+          <div class="card-body">
+            <canvas id="attendanceSummaryChart"></canvas>
+            <div class="attendance-legend mt-3">
+              <div class="legend-item">
+                <span class="legend-color bg-primary"></span>
+                <span>Present <strong><%= attendanceSummary.presentPercentage %>%</strong></span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color bg-danger"></span>
+                <span>Absent <strong><%= attendanceSummary.absentPercentage %>%</strong></span>
+              </div>
+              <div class="legend-item">
+                <span class="legend-color bg-warning"></span>
+                <span>Late <strong><%= attendanceSummary.latePercentage %>%</strong></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leave Requests and Holidays -->
+    <div class="row mb-4">
+      <!-- Leave Requests -->
+      <div class="col-lg-8 mb-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Leave Requests</h5>
+            <a href="/leaves" class="btn btn-sm btn-primary">View All <i class="fas fa-arrow-right ms-1"></i></a>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Employee</th>
+                    <th>Leave Type</th>
+                    <th>Dates</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if(leaveRequests.length > 0) { %>
+                    <% leaveRequests.forEach(leave => { %>
+                      <tr>
+                        <td>
+                          <div class="d-flex align-items-center">
+                            <img src="https://ui-avatars.com/api/?name=<%= leave.employee.name %>&background=random" 
+                                 alt="<%= leave.employee.name %>" class="rounded-circle me-2" width="40" height="40">
+                            <div>
+                              <h6 class="mb-0"><%= leave.employee.name %></h6>
+                              <small class="text-muted"><%= leave.employee.department %></small>
+                            </div>
+                          </div>
+                        </td>
+                        <td><%= leave.leaveType %></td>
+                        <td>
+                          <%= new Date(leave.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %> - 
+                          <%= new Date(leave.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                        </td>
+                        <td>
+                          <span class="badge <%= leave.status === 'Approved' ? 'bg-success' : leave.status === 'Rejected' ? 'bg-danger' : 'bg-warning' %>">
+                            <%= leave.status %>
+                          </span>
+                        </td>
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="4" class="text-center text-muted">No leave requests found</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Upcoming Holidays -->
+      <div class="col-lg-4 mb-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Upcoming Holidays</h5>
+            <a href="#" class="btn btn-sm btn-link">View Calendar <i class="fas fa-arrow-right ms-1"></i></a>
+          </div>
+          <div class="card-body">
+            <% if(holidays.length > 0) { %>
+              <% holidays.forEach(holiday => { %>
+                <div class="holiday-item mb-3">
+                  <div class="d-flex align-items-center">
+                    <div class="holiday-icon bg-danger-light me-3">
+                      <i class="fas fa-calendar-day text-danger"></i>
+                    </div>
+                    <div>
+                      <h6 class="mb-0"><%= holiday.name %></h6>
+                      <small class="text-muted">
+                        <%= new Date(holiday.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' }) %>
+                      </small>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            <% } else { %>
+              <p class="text-muted text-center">No upcoming holidays</p>
+            <% } %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activities -->
+    <div class="row">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Recent Activities</h5>
+            <a href="#" class="btn btn-sm btn-link">View More <i class="fas fa-arrow-right ms-1"></i></a>
+          </div>
+          <div class="card-body">
+            <div class="row">
+              <% if(recentActivities.length > 0) { %>
+                <% recentActivities.forEach(activity => { %>
+                  <div class="col-md-6 mb-3">
+                    <div class="activity-item d-flex align-items-start">
+                      <div class="activity-icon me-3">
+                        <i class="fas <%= activity.type === 'employee' ? 'fa-user-plus text-primary' : 
+                                          activity.type === 'payroll' ? 'fa-check-circle text-success' :
+                                          activity.type === 'leave' ? 'fa-calendar-check text-info' :
+                                          activity.type === 'attendance' ? 'fa-clipboard-check text-warning' :
+                                          'fa-cog text-secondary' %>"></i>
+                      </div>
+                      <div class="activity-content flex-grow-1">
+                        <p class="mb-0"><%= activity.message %></p>
+                        <small class="text-muted">
+                          <% const mins = Math.floor((new Date() - new Date(activity.timestamp)) / 60000); %>
+                          <% if (mins < 60) { %>
+                            <%= mins %> mins ago
+                          <% } else if (mins < 1440) { %>
+                            <%= Math.floor(mins / 60) %> hours ago
+                          <% } else { %>
+                            <%= Math.floor(mins / 1440) %> days ago
+                          <% } %>
+                        </small>
+                      </div>
+                    </div>
+                  </div>
+                <% }) %>
+              <% } else { %>
+                <p class="text-muted text-center">No recent activities</p>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Pass data to client-side JavaScript
+  window.chartData = {
+    employeeOverview: {
+      labels: <%- JSON.stringify(employeeOverview.labels) %>,
+      newHires: <%- JSON.stringify(employeeOverview.newHires) %>,
+      departures: <%- JSON.stringify(employeeOverview.departures) %>
+    },
+    attendanceSummary: {
+      present: <%= attendanceSummary.Present %>,
+      absent: <%= attendanceSummary.Absent %>,
+      late: <%= attendanceSummary.Late %>
+    }
+  };
+</script>
