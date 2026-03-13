@@ -1,6 +1,6 @@
 # HR Management System
 
-A comprehensive, production-ready HR Management Dashboard built with Node.js, Express, MongoDB, and EJS.
+A comprehensive, production-ready HR Management Dashboard built with Node.js, Express, MongoDB, and EJS..
 
 ![HR Management System](https://img.shields.io/badge/Node.js-Express-green)
 ![MongoDB](https://img.shields.io/badge/Database-MongoDB-brightgreen)
