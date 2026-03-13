@@ -96,7 +96,7 @@ npm start
 
 Visit: **http://localhost:3000/dashboard**
 
-## 📊 Application Structure
+## 📊 Application Structure.
 
 ```
 HRmange/
